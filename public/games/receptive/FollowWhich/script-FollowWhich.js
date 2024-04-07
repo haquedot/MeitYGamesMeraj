@@ -11,7 +11,7 @@ function pauseClicked() {
     icon.classList.add('bi-pause-fill');
   }
 }
-
+// fruits
 const fruits = [
   { name: 'apple', color: 'red', image: 'apple.jpg' },
   { name: 'banana', color: 'yellow', image: 'banana.jpg' },
