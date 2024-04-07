@@ -1,3 +1,41 @@
+var cardCount = parseInt(localStorage.getItem('cardCount')) || 2;
+var heartsCount = parseInt(localStorage.getItem('heartsCount')) || 3;
+var correctScore = parseInt(localStorage.getItem('correctScore')) || 0;
+var wrongScore = parseInt(localStorage.getItem('wrongScore')) || 0;
+var flag = 0;
+
+window.addEventListener('beforeunload', function () {
+  localStorage.setItem('cardCount', cardCount.toString());
+  localStorage.setItem('heartsCount', heartsCount.toString());
+  localStorage.setItem('correctScore', correctScore.toString());
+  localStorage.setItem('wrongScore', wrongScore.toString());
+});
+
+
+function audios() {
+  var pauseAudio = document.getElementById("pause");
+  var pauseIcon = document.getElementById("pauseIcon");
+  var homeAudio = document.getElementById("home");
+  var homeButton = document.getElementById("homeButton");
+  var resumeAudio = document.getElementById("resumeAudio");
+  var resumeButton = document.getElementById('resumeButton');
+  var restartAudio = document.getElementById("restartAudio");
+  var restartButton = document.getElementById('restartButton');
+
+  pauseIcon.addEventListener("click", function () {
+    pauseAudio.play();
+  });
+  homeButton.addEventListener("mouseenter", function () {
+    homeAudio.play();
+  });
+  resumeButton.addEventListener("click", function () {
+    resumeAudio.play();
+  });
+  restartButton.addEventListener("click", function () {
+    restartAudio.play();
+  });
+}
+
 function pauseClicked() {
   var button = document.querySelector('.pause_button');
   var icon = button.querySelector('i');
@@ -23,83 +61,161 @@ const fruits = [
 ];
 
 
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
-var currentQuestionIndex = 0;
-var score = 0;
-var wrongAttempts = 0;
-var hearts = 3;
 
+const followWhich = document.getElementById('followWhich')
+const end = document.getElementById('end')
+
+function counters() {
+  flag = 0;
+  cardCount = 2;
+  heartsCount = 3;
+  correctScore = 0;
+  wrongScore = 0;
+  generateHearts();
+  pauseClicked();
+}
+function home() {
+  counters();
+}
+
+function restart() {
+  if (heartsCount == 0 || flag == 5) {
+    end.classList.add('d-none');
+    followWhich.classList.remove('d-none');
+    counters();
+    return;
+  }
+  counters();
+}
+
+function generateHearts() {
+  const hearts = document.getElementById('hearts');
+  hearts.innerHTML = '';
+  for (let i = 0; i < heartsCount; i++) {
+    const heartDiv = document.createElement('div');
+    const oneHeart = `<i class="bi bi-heart-fill fs-2 me-1 text-danger"></i>`;
+    heartDiv.innerHTML = oneHeart;
+    hearts.appendChild(heartDiv);
+  }
+}
+
+
+function win() {
+  if (heartsCount == 3 && flag == 5) {
+    const winAudio = document.getElementById('winAudio');
+    winAudio.play();
+  }
+}
+function gameComplete() {
+  win();
+  followWhich.classList.add('d-none');
+  end.classList.remove('d-none');
+}
 function generateCards() {
+  flag++;
+  if (flag == 5) {
+    gameComplete();
+  }
   const cardsContainer = document.getElementById('cards');
   cardsContainer.innerHTML = '';
-  const question = fruits[currentQuestionIndex];
-  const shuffledFruits = fruits.sort(() => Math.random() - 0.5);
-  shuffledFruits.forEach(fruit => {
+  const shuffledFruits = shuffleArray(fruits);
+  if (heartsCount === 0) {
+    followWhich.classList.add('d-none');
+    end.classList.remove('d-none');
+  }
+  for (let i = 0; i < cardCount; i++) {
+    const questionColor = document.getElementById('questionColor');
+    questionColor.innerHTML = shuffledFruits[i].color
     const card = document.createElement('div');
     card.classList.add('col-6', 'col-sm-4', 'col-md-3', 'col-lg-2');
     const cardContent = `
-    <div class="card rounded-4 p-3 mb-3" onclick="selectFruit('${fruit.name}')>
-    <img src="./images/${fruit.image}" alt="${fruit.image}" class="w-100 rounded-4">
+    <div class="card rounded-4 p-3 mb-3" id="${shuffledFruits[i].name}" onclick="selectFruit('${shuffledFruits[i].color}','${shuffledFruits[i].name}')">
+    <img src="./images/${shuffledFruits[i].image}" alt="${shuffledFruits[i].image}" class="w-100 rounded-4">
   </div>
 
     `;
     card.innerHTML = cardContent;
     cardsContainer.appendChild(card);
-  });
+  }
+
 }
 
-function selectFruit(selectFruit) {
-  const question = fruits[currentQuestionIndex];
-  if (selectedFruit === question.name){
-    score++;
-    document.getElementById('correctCount').textContent = score;
-    document.getElementById('next').classList.remove('d-none');
-    document.getElementById('tryAgain').classList.add('d-none');
-  }else{
-    wrongAttempts++;
-    document.getElementById('tryAgain').classList.remove('d-none')
-    document.getElementById('next').classList.remove('d-none')
+const correctCount = document.getElementById('correctCount');
+const wrongCount = document.getElementById('wrongCount');
 
+const tryAgain = document.getElementById('tryAgain');
+const next = document.getElementById('next');
+
+const correctAudio = document.getElementById('correctAudio');
+const tryAgainAudio = document.getElementById('tryAgainAudio');
+
+
+function correct(correctCard) {
+  console.log(correctCount);
+  correctAudio.play();
+  correctCard = document.getElementById(`${correctCard}`)
+  correctCard.classList.add('border');
+  correctCard.classList.add('border-2');
+  correctCard.classList.add('border-success')
+  correctCount.innerHTML = `${++correctScore}`;
+  next.classList.remove('d-none');
+
+}
+function wrong(wrongCard) {
+  if (heartsCount == 1 || flag == 5) {
+    gameComplete();
+    return;
+  }
+  tryAgainAudio.play();
+  wrongCard = document.getElementById(`${wrongCard}`)
+  wrongCard.classList.add('border');
+  wrongCard.classList.add('border-2');
+  wrongCard.classList.add('border-danger')
+  wrongCount.innerHTML = `${++wrongScore}`;
+  tryAgain.classList.remove('d-none');
+}
+
+function selectFruit(fruitColor, fruitName) {
+  if (heartsCount > 0) {
+    if (questionColor.innerHTML === fruitColor) {
+      correct(fruitName);
+    } else {
+      wrong(fruitName);
+    }
   }
 }
 
-function tryAgain(){
+function nextButton() {
+  if (!tryAgain.classList.contains('d-none')) {
+    tryAgain.classList.add('d-none');
+  }
+  cardCount++;
+  next.classList.add('d-none');
   generateCards();
-  document.getElementById('tryAgain').classList.add('d-none')
-  document.getElementById('next').classList.add('d-none')
 }
 
-function nextQuestion() {
-  currentQuestionIndex++;
-  if (currentQuestionIndex >= fruits.length) {
-    // Game Over
-    alert('Congratulations! You have completed the game.');
-  } else {
-    document.getElementById('question').textContent = `Which fruit is ${fruits[currentQuestionIndex].color}?`;
-    generateCards();
-    document.getElementById('next').classList.add('d-none');
-    document.getElementById('tryAgain').classList.add('d-none');
+function tryAgainButton() {
+  const heartDeductedAudio = document.getElementById('heartDeductedAudio');
+  if (heartsCount > 1) {
+    heartDeductedAudio.play();
+
   }
+  heartsCount--;
+  tryAgain.classList.add('d-none');
+  next.classList.add('d-none');
+
+  generateHearts();
+  generateCards();
 }
 
-
-function goHome() {
-  // Redirect to home page or perform other actions
-}
-
-// Function to handle Resume button click
-function resumeGame() {
-  // Resume game from paused state
-}
-
-// Function to handle Restart button click
-function restartGame() {
-  // Restart the game
-}
-
-// Function to handle Cancel button click on modal
-function cancelModal() {
-  // Dismiss the modal without any action
-}
-
+generateHearts();
 generateCards();
+audios();
