@@ -58,3 +58,11 @@
 .end_div{
   min-height: 100vh;
 }
+
+.end_div img{
+  width: 70px;
+}
+
+.end_div span{
+  font-size: 64px;
+}

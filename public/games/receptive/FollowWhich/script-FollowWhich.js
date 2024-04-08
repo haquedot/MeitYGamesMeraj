@@ -1,15 +1,15 @@
-var cardCount = parseInt(localStorage.getItem('cardCount')) || 2;
-var heartsCount = parseInt(localStorage.getItem('heartsCount')) || 3;
-var correctScore = parseInt(localStorage.getItem('correctScore')) || 0;
-var wrongScore = parseInt(localStorage.getItem('wrongScore')) || 0;
+var cardCount = 2;
+var heartsCount = 3;
+var correctScore = 0;
+var wrongScore = 0;
 var flag = 0;
 
-window.addEventListener('beforeunload', function () {
-  localStorage.setItem('cardCount', cardCount.toString());
-  localStorage.setItem('heartsCount', heartsCount.toString());
-  localStorage.setItem('correctScore', correctScore.toString());
-  localStorage.setItem('wrongScore', wrongScore.toString());
-});
+// window.addEventListener('beforeunload', function () {
+//   localStorage.setItem('cardCount', cardCount.toString());
+//   localStorage.setItem('heartsCount', heartsCount.toString());
+//   localStorage.setItem('correctScore', correctScore.toString());
+//   localStorage.setItem('wrongScore', wrongScore.toString());
+// });
 
 
 function audios() {
@@ -87,12 +87,14 @@ function home() {
 }
 
 function restart() {
+  location.reload();
   if (heartsCount == 0 || flag == 5) {
     end.classList.add('d-none');
     followWhich.classList.remove('d-none');
     counters();
     return;
   }
+  restartAudio.play();
   counters();
 }
 
@@ -107,8 +109,12 @@ function generateHearts() {
   }
 }
 
+const correctCount = document.getElementById('correctCount');
+const wrongCount = document.getElementById('wrongCount');
 
 function win() {
+  correctCount.innerHTML = `${correctScore}`;
+  wrongCount.innerHTML = `${wrongScore}`;
   if (heartsCount == 3 && flag == 5) {
     const winAudio = document.getElementById('winAudio');
     winAudio.play();
@@ -116,6 +122,7 @@ function win() {
 }
 function gameComplete() {
   win();
+  // counters();
   followWhich.classList.add('d-none');
   end.classList.remove('d-none');
 }
@@ -148,8 +155,7 @@ function generateCards() {
 
 }
 
-const correctCount = document.getElementById('correctCount');
-const wrongCount = document.getElementById('wrongCount');
+
 
 const tryAgain = document.getElementById('tryAgain');
 const next = document.getElementById('next');
@@ -159,6 +165,9 @@ const tryAgainAudio = document.getElementById('tryAgainAudio');
 
 
 function correct(correctCard) {
+  setTimeout(() => {
+    nextButton();
+  }, 1000)
   console.log(correctCount);
   correctAudio.play();
   correctCard = document.getElementById(`${correctCard}`)
@@ -166,7 +175,7 @@ function correct(correctCard) {
   correctCard.classList.add('border-2');
   correctCard.classList.add('border-success')
   correctCount.innerHTML = `${++correctScore}`;
-  next.classList.remove('d-none');
+  // next.classList.remove('d-none');
 
 }
 function wrong(wrongCard) {
@@ -176,9 +185,7 @@ function wrong(wrongCard) {
   }
   tryAgainAudio.play();
   wrongCard = document.getElementById(`${wrongCard}`)
-  wrongCard.classList.add('border');
-  wrongCard.classList.add('border-2');
-  wrongCard.classList.add('border-danger')
+  wrongCard.classList.add('border', 'border-2', 'border-danger');
   wrongCount.innerHTML = `${++wrongScore}`;
   tryAgain.classList.remove('d-none');
 }
@@ -194,11 +201,11 @@ function selectFruit(fruitColor, fruitName) {
 }
 
 function nextButton() {
-  if (!tryAgain.classList.contains('d-none')) {
-    tryAgain.classList.add('d-none');
-  }
+  // if (!tryAgain.classList.contains('d-none')) {
+  //   tryAgain.classList.add('d-none');
+  // }
   cardCount++;
-  next.classList.add('d-none');
+  // next.classList.add('d-none');
   generateCards();
 }
 
