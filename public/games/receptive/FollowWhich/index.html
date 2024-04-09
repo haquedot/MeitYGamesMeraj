@@ -92,11 +92,11 @@
         <div class="d-flex justify-content-center mb-4">
           <div class="d-flex align-items-center me-3 fw-bold text-success">
             <img src="images/correct_icon.svg" alt="correct_icon" class="me-2">
-            <span id="correctCount">0</span>
+            <span id="finalCorrect">0</span>
           </div>
           <div class="d-flex align-items-center fw-bold text-danger">
             <img src="images/wrong_icon.svg" alt="wrong_icon" class="me-2">
-            <span id="wrongCount">0</span>
+            <span id="finalWrong">0</span>
           </div>
         </div>
         <div class="d-flex justify-content-center ">
@@ -106,12 +106,15 @@
           <a id="homeButton" href="../../index.html" class="custom_btn py-2 px-3 rounded-5" onclick="home()"><i
               class="bi bi-house fs-2"></i>
           </a>
+
         </div>
       </div>
+
     </div>
   </div>
 
 
+  <img src="images/winGif.gif" alt="" class="gif d-none" id="winGif">
 
   <audio id="pause" src="../../audios/pause.mp3"></audio>
   <audio id="home" src="../../audios/home.mp3"></audio>
@@ -124,7 +127,6 @@
   <audio id="heartDeductedAudio" src="../../audios/heartDeducted.mp3"></audio>
 
   <audio id="winAudio" src="../../audios/win.mp3"></audio>
-
 
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
     integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
